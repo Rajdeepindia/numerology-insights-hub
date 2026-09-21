@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
@@ -218,7 +218,15 @@ function Navbar({ openReport }: { openReport: () => void }) {
 
 export function NumerologyLanding() {
   const [modalOpen, setModalOpen] = useState(false);
-  const openReport = () => setModalOpen(true);
+  const reportTriggerRef = useRef<HTMLElement | null>(null);
+  const openReport = () => {
+    reportTriggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setModalOpen(true);
+  };
+  const handleModalChange = (open: boolean) => {
+    setModalOpen(open);
+    if (!open) window.setTimeout(() => reportTriggerRef.current?.focus(), 0);
+  };
   return (
     <div className="overflow-x-clip bg-background text-foreground">
       <Navbar openReport={openReport} />
@@ -320,7 +328,7 @@ export function NumerologyLanding() {
       <footer className="bg-card py-12">
         <div className="container-shell"><div className="grid gap-10 border-b border-border pb-10 sm:grid-cols-2 lg:grid-cols-4"><div><a href="#home" className="flex items-center gap-3 font-display text-xl"><Orbit className="size-6 text-primary" />NUMINA</a><p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">Personalized numerology for thoughtful reflection, perspective and self-discovery.</p></div><FooterLinks title="Navigate" links={[["How It Works", "#how-it-works"], ["About", "#about"], ["Services", "#services"], ["FAQ", "#faq"]]} /><FooterLinks title="Services" links={[["Free Numerology Report", "#home"], ["Career Numerology", "#services"], ["Relationship Reading", "#services"], ["Name Analysis", "#services"]]} /><div><h3 className="text-sm font-medium">Contact</h3><p className="mt-4 text-sm leading-6 text-muted-foreground">Contact details will be added here.</p><div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground"><a href="#privacy">Privacy Policy</a><a href="#terms">Terms & Conditions</a></div></div></div><p id="privacy" className="pt-7 text-xs leading-5 text-muted-foreground">Numerology is intended for personal reflection, guidance and entertainment. It should not be considered a substitute for professional medical, legal, financial or mental-health advice, and no specific outcome is guaranteed.</p><p className="mt-5 text-xs text-muted-foreground">© 2026 NUMINA. All rights reserved.</p></div>
       </footer>
-      <LeadCaptureModal open={modalOpen} onOpenChange={setModalOpen} />
+      <LeadCaptureModal open={modalOpen} onOpenChange={handleModalChange} />
     </div>
   );
 }
