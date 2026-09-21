@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -72,6 +73,22 @@ const faqs = [
   ["Can I book a detailed consultation later?", "Yes. After exploring your free report, you can choose a deeper consultation if it feels useful to you."],
   ["How long does it take to receive the report?", "Preparation time depends on the details shared. We will confirm an expected timeline when we contact you."],
 ] as const;
+
+const perspectiveCards: ReadonlyArray<readonly [string, string, LucideIcon]> = [
+  ["Career & Direction", "Explore patterns connected to your strengths, interests and professional direction.", Compass],
+  ["Relationships", "Understand personality patterns and compatibility through numerological interpretation.", Heart],
+  ["Personal Growth", "Reflect on your strengths, challenges and recurring patterns.", Sparkles],
+  ["Business & Decisions", "Explore perspectives around business identity and important decisions.", BriefcaseBusiness],
+];
+
+const trustItems: ReadonlyArray<readonly [string, LucideIcon]> = [
+  ["Personalized interpretation", Gem],
+  ["Confidential information handling", LockKeyhole],
+  ["Clear, transparent process", Compass],
+  ["Human consultation", UsersRound],
+  ["Thoughtful analysis", Sparkles],
+  ["No exaggerated promises", ShieldCheck],
+];
 
 function validate(data: LeadData): Errors {
   const errors: Errors = {};
@@ -170,7 +187,7 @@ function LeadCaptureModal({ open, onOpenChange }: { open: boolean; onOpenChange:
   );
 }
 
-function FormField({ id, label, error, children }: { id: string; label: string; error?: string; children: React.ReactNode }) {
+function FormField({ id, label, error, children }: { id: string; label: string; error: string | undefined; children: ReactNode }) {
   return <div><Label htmlFor={id} className="mb-2 block text-foreground">{label}</Label>{children}{error && <p id={`${id}-error`} className="mt-1.5 text-xs text-destructive" role="alert">{error}</p>}</div>;
 }
 
@@ -227,7 +244,7 @@ export function NumerologyLanding() {
           <div className="container-shell">
             <SectionHeading kicker="A new point of view" title="Sometimes, You Just Need a Different Perspective." copy="There are moments when you feel uncertain about your next step, your relationships, your career, or the direction you're taking in life. Numerology offers another way to reflect on your patterns, strengths and personal cycles." />
             <div className="mt-12 grid gap-px overflow-hidden rounded-lg border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
-              {[["Career & Direction", "Explore patterns connected to your strengths, interests and professional direction.", Compass], ["Relationships", "Understand personality patterns and compatibility through numerological interpretation.", Heart], ["Personal Growth", "Reflect on your strengths, challenges and recurring patterns.", Sparkles], ["Business & Decisions", "Explore perspectives around business identity and important decisions.", BriefcaseBusiness]].map(([title, copy, Icon]) => <article key={title as string} className="bg-card p-6 sm:p-7"><Icon className="size-6 text-primary" /><h3 className="mt-6 font-display text-xl">{title as string}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{copy as string}</p></article>)}
+              {perspectiveCards.map(([title, copy, Icon]) => <article key={title} className="bg-card p-6 sm:p-7"><Icon className="size-6 text-primary" /><h3 className="mt-6 font-display text-xl">{title}</h3><p className="mt-3 text-sm leading-6 text-muted-foreground">{copy}</p></article>)}
             </div>
           </div>
         </section>
@@ -277,7 +294,7 @@ export function NumerologyLanding() {
 
         <section className="section-space border-y border-border bg-secondary/40">
           <div className="container-shell"><SectionHeading center kicker="Trust, without theatrics" title="A Clear and Considered Experience" />
-            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">{[["Personalized interpretation", Gem], ["Confidential information handling", LockKeyhole], ["Clear, transparent process", Compass], ["Human consultation", UsersRound], ["Thoughtful analysis", Sparkles], ["No exaggerated promises", ShieldCheck]].map(([title, Icon]) => <div key={title as string} className="flex items-center gap-4"><span className="grid size-10 shrink-0 place-items-center rounded-full border border-border text-primary"><Icon className="size-4" /></span><h3 className="text-sm font-medium">{title as string}</h3></div>)}</div>
+            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">{trustItems.map(([title, Icon]) => <div key={title} className="flex items-center gap-4"><span className="grid size-10 shrink-0 place-items-center rounded-full border border-border text-primary"><Icon className="size-4" /></span><h3 className="text-sm font-medium">{title}</h3></div>)}</div>
           </div>
         </section>
 

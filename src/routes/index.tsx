@@ -1,24 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { NumerologyLanding } from "@/components/numerology-landing";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Free Personalized Numerology Report | NUMINA" },
+      { name: "description", content: "Get a free personalized numerology report and explore insights into your personality, career, relationships, personal growth and important life cycles." },
+      { property: "og:title", content: "Free Personalized Numerology Report | NUMINA" },
+      { property: "og:description", content: "Explore your personality, career, relationships and personal cycles with a thoughtful personalized numerology report." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://your-domain.com/" }],
+  }),
+  component: NumerologyLanding,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
