@@ -9,9 +9,12 @@ import {
   Gem,
   Heart,
   LockKeyhole,
+  Mail,
+  MapPin,
   Menu,
   MoonStar,
   Orbit,
+  Phone,
   ShieldCheck,
   Sparkles,
   Star,
@@ -35,8 +38,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import heroImage from "@/assets/numerology-hero.jpg";
-import consultantImage from "@/assets/consultant-placeholder.jpg";
+const heroImageUrl = "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=Celestial%20numerology%20wheel%20formed%20from%20delicate%20numbers%20and%20geometric%20orbits%2C%20dark%20purple%20and%20violet%20tones%2C%20mysterious%20and%20professional%20spiritual%20atmosphere%2C%20high%20resolution%2C%20elegant%20design&image_size=landscape_16_9";
+const consultantImageUrl = "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=A%20professional%20and%20trustworthy%20Indian%20numerology%20consultant%2C%20middle-aged%2C%20warm%20and%20welcoming%20expression%2C%20spiritual%20but%20professional%20background%2C%20soft%20lighting%2C%20high%20resolution%20portrait&image_size=portrait_4_3";
 
 type LeadData = {
   name: string;
@@ -106,7 +109,12 @@ function LeadCaptureModal({ open, onOpenChange }: { open: boolean; onOpenChange:
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
   const update = (field: keyof LeadData, value: string) => {
-    setData((current) => ({ ...current, [field]: value }));
+    let finalValue = value;
+    if (field === "phone") {
+      // Strip +91 if user types it manually despite the prefix label
+      finalValue = value.replace(/^\+91\s*/, "").replace(/\D/g, "");
+    }
+    setData((current) => ({ ...current, [field]: finalValue }));
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
@@ -119,7 +127,8 @@ function LeadCaptureModal({ open, onOpenChange }: { open: boolean; onOpenChange:
     }
     setStatus("submitting");
     try {
-      await Promise.resolve();
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       setStatus("success");
     } catch {
       setStatus("error");
@@ -129,6 +138,9 @@ function LeadCaptureModal({ open, onOpenChange }: { open: boolean; onOpenChange:
   const close = () => {
     onOpenChange(false);
     window.setTimeout(() => {
+      if (status === "success") {
+        setData({ name: "", phone: "", email: "", reason_for_report: "" });
+      }
       setStatus("idle");
       setErrors({});
     }, 250);
@@ -201,9 +213,8 @@ function Navbar({ openReport }: { openReport: () => void }) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
       <nav className="container-shell grid h-18 grid-cols-[minmax(0,1fr)_auto] items-center" aria-label="Main navigation">
-        <a href="#home" className="flex min-w-0 items-center gap-3" onClick={() => setMobileOpen(false)}>
-          <span className="grid size-9 shrink-0 place-items-center rounded-full border border-primary/50 bg-primary/10 text-primary"><Orbit className="size-5" /></span>
-          <span className="truncate font-display text-xl text-foreground">NUMINA</span>
+        <a href="#home" className="flex min-w-0 items-center" onClick={() => setMobileOpen(false)}>
+          <img src="/logo.png" alt="NUMINA Logo" className="h-10 w-auto" />
         </a>
         <div className="hidden items-center gap-7 lg:flex">
           {navItems.map(([label, href]) => <a key={href} href={href} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{label}</a>)}
@@ -231,12 +242,14 @@ export function NumerologyLanding() {
     <div className="overflow-x-clip bg-background text-foreground">
       <Navbar openReport={openReport} />
       <main>
-        <section id="home" className="relative flex min-h-[92svh] items-end overflow-hidden pt-24">
-          <img src={heroImage} alt="Celestial numerology wheel formed from delicate numbers and geometric orbits" width={1536} height={1024} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover object-[66%_center]" />
+        <section id="home" className="relative flex min-h-[92svh] items-end overflow-hidden pt-24 animate-in fade-in duration-1000">
+          <img src={heroImageUrl} alt="Celestial numerology wheel formed from delicate numbers and geometric orbits" width={1536} height={1024} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover object-[66%_center] scale-105 animate-in zoom-in-110 duration-1000" />
           <div className="hero-veil absolute inset-0" />
-          <div className="container-shell relative z-10 pb-16 pt-24 sm:pb-24 lg:pb-28 lg:pt-32">
+          <div className="container-shell relative z-10 pb-16 pt-24 sm:pb-24 lg:pb-28 lg:pt-32 animate-in slide-in-from-bottom-8 duration-700 delay-300 fill-mode-both">
             <div className="max-w-2xl">
-              <p className="section-kicker">Personalized numerology • thoughtfully interpreted</p>
+              <div className="mb-6">
+                <span className="animated-purple-badge">100% Free Personalized Report</span>
+              </div>
               <h1 className="mt-5 font-display text-5xl leading-[1.05] text-foreground sm:text-6xl lg:text-7xl">Discover What Your Numbers <span className="text-primary">Reveal About You</span></h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-foreground/75 sm:text-lg">Get a personalized numerology report designed to help you explore your personality, strengths, relationships, career direction and important life cycles.</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -295,7 +308,7 @@ export function NumerologyLanding() {
 
         <section id="about" className="section-space">
           <div className="container-shell grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
-            <div className="relative mx-auto w-full max-w-md"><div className="absolute -inset-3 rounded-lg border border-primary/20" /><img src={consultantImage} alt="Placeholder portrait for your numerology consultant" width={1024} height={1280} loading="lazy" className="relative aspect-[4/5] w-full rounded-lg object-cover" /><span className="absolute bottom-4 left-4 rounded-md border border-border bg-background/90 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur">Consultant portrait placeholder</span></div>
+            <div className="relative mx-auto w-full max-w-md"><div className="absolute -inset-3 rounded-lg border border-primary/20" /><img src={consultantImageUrl} alt="Professional Indian numerology consultant" width={1024} height={1280} loading="lazy" className="relative aspect-[4/5] w-full rounded-lg object-cover" /></div>
             <div><SectionHeading kicker="Guidance • Reflection • Perspective" title="Meet Your Numerology Consultant" copy="Your consultant introduction will appear here. Share your experience, philosophy and the thoughtful approach you bring to every reading." /><div className="mt-8 grid gap-5 sm:grid-cols-2"><div className="border-l border-primary/40 pl-4"><h3 className="font-display text-lg">A human approach</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Interpretation grounded in listening, context and your personal questions.</p></div><div className="border-l border-primary/40 pl-4"><h3 className="font-display text-lg">Empowering guidance</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Insights designed to support reflection—not prescribe or guarantee outcomes.</p></div></div></div>
           </div>
         </section>
@@ -322,11 +335,35 @@ export function NumerologyLanding() {
           <div className="container-shell grid gap-10 lg:grid-cols-[0.7fr_1.3fr]"><SectionHeading kicker="Clear answers" title="Frequently Asked Questions" copy="Everything you need to know before requesting your first report." /><Accordion type="single" collapsible className="border-t border-border">{faqs.map(([question, answer], index) => <AccordionItem value={`faq-${index}`} key={question}><AccordionTrigger className="py-5 text-base hover:no-underline">{question}</AccordionTrigger><AccordionContent className="max-w-2xl pb-5 leading-6 text-muted-foreground">{answer}</AccordionContent></AccordionItem>)}</Accordion></div>
         </section>
 
-        <section className="relative overflow-hidden border-y border-primary/20 py-20 sm:py-24"><div className="cta-aura absolute inset-0" /><div className="container-shell relative text-center"><p className="section-kicker">Begin with curiosity</p><h2 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Curious About What Your Numbers Reveal?</h2><p className="mx-auto mt-5 max-w-xl leading-7 text-muted-foreground">Start with your free personalized numerology report and explore the insights your numbers may offer.</p><Button size="lg" onClick={openReport} className="mt-8 min-h-12">Get My Free Numerology Report <ArrowRight /></Button></div></section>
+        <section className="relative overflow-hidden border-y border-primary/20 py-20 sm:py-24"><div className="cta-aura absolute inset-0" /><div className="container-shell relative text-center">
+          <div className="mb-6 flex justify-center">
+            <span className="animated-purple-badge">100% Free Personalized Report</span>
+          </div>
+          <h2 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">Curious About What Your Numbers Reveal?</h2><p className="mx-auto mt-5 max-w-xl leading-7 text-muted-foreground">Start with your free personalized numerology report and explore the insights your numbers may offer.</p><Button size="lg" onClick={openReport} className="mt-8 min-h-12">Get My Free Numerology Report <ArrowRight /></Button></div></section>
       </main>
 
       <footer className="bg-card py-12">
-        <div className="container-shell"><div className="grid gap-10 border-b border-border pb-10 sm:grid-cols-2 lg:grid-cols-4"><div><a href="#home" className="flex items-center gap-3 font-display text-xl"><Orbit className="size-6 text-primary" />NUMINA</a><p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">Personalized numerology for thoughtful reflection, perspective and self-discovery.</p></div><FooterLinks title="Navigate" links={[["How It Works", "#how-it-works"], ["About", "#about"], ["Services", "#services"], ["FAQ", "#faq"]]} /><FooterLinks title="Services" links={[["Free Numerology Report", "#home"], ["Career Numerology", "#services"], ["Relationship Reading", "#services"], ["Name Analysis", "#services"]]} /><div><h3 className="text-sm font-medium">Contact</h3><p className="mt-4 text-sm leading-6 text-muted-foreground">Contact details will be added here.</p><div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground"><a href="#privacy">Privacy Policy</a><a href="#terms">Terms & Conditions</a></div></div></div><p id="privacy" className="pt-7 text-xs leading-5 text-muted-foreground">Numerology is intended for personal reflection, guidance and entertainment. It should not be considered a substitute for professional medical, legal, financial or mental-health advice, and no specific outcome is guaranteed.</p><p className="mt-5 text-xs text-muted-foreground">© 2026 NUMINA. All rights reserved.</p></div>
+        <div className="container-shell"><div className="grid gap-10 border-b border-border pb-10 sm:grid-cols-2 lg:grid-cols-4"><div><a href="#home" className="flex items-center"><img src="/logo.png" alt="NUMINA Logo" className="h-8 w-auto" /></a><p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">Personalized numerology for thoughtful reflection, perspective and self-discovery.</p></div><FooterLinks title="Navigate" links={[["How It Works", "#how-it-works"], ["About", "#about"], ["Services", "#services"], ["FAQ", "#faq"]]} /><FooterLinks title="Services" links={[["Free Numerology Report", "#home"], ["Career Numerology", "#services"], ["Relationship Reading", "#services"], ["Name Analysis", "#services"]]} />          <div>
+            <h3 className="text-sm font-medium">Contact</h3>
+            <ul className="mt-4 space-y-3">
+              <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                <Phone className="mt-0.5 size-4 shrink-0 text-primary" />
+                <span>+91 98765 43210</span>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                <Mail className="mt-0.5 size-4 shrink-0 text-primary" />
+                <a href="mailto:hello@numina.com" className="hover:text-foreground">hello@numina.com</a>
+              </li>
+              <li className="flex items-start gap-3 text-sm text-muted-foreground">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+                <span>Mumbai, Maharashtra, India</span>
+              </li>
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-4 text-xs text-muted-foreground">
+              <a href="#privacy" className="hover:text-foreground">Privacy Policy</a>
+              <a href="#terms" className="hover:text-foreground">Terms & Conditions</a>
+            </div>
+          </div></div><p id="privacy" className="pt-7 text-xs leading-5 text-muted-foreground">Numerology is intended for personal reflection, guidance and entertainment. It should not be considered a substitute for professional medical, legal, financial or mental-health advice, and no specific outcome is guaranteed.</p><p className="mt-5 text-xs text-muted-foreground">© 2026 NUMINA. All rights reserved.</p></div>
       </footer>
       <LeadCaptureModal open={modalOpen} onOpenChange={handleModalChange} />
     </div>

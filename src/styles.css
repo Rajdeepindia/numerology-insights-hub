@@ -183,6 +183,29 @@
   background-size: 24px 24px;
 }
 
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@utility animated-purple-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffffff !important;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, oklch(0.45 0.18 295), oklch(0.55 0.22 315), oklch(0.4 0.15 280), oklch(0.5 0.2 305), oklch(0.45 0.18 295));
+  background-size: 300% 100%;
+  animation: gradient-shift 3s linear infinite;
+  box-shadow: 0 0 20px color-mix(in oklab, oklch(0.5 0.2 300) 40%, transparent);
+  border: 1px solid color-mix(in oklab, #ffffff 15%, transparent);
+}
+
 @media (max-width: 639px) {
   .hero-veil { background: linear-gradient(0deg, var(--background) 0%, color-mix(in oklab, var(--background) 70%, transparent) 55%, color-mix(in oklab, var(--background) 45%, transparent) 100%); }
 }
